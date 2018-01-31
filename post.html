@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> 测试页面 </title>
+	<meta charset="utf-8">
+ </head>
+
+ <body style="font-size:12px;">
+ <div style="text-align:left">
+  <textarea id="content" name="content" rows="10" cols="100"></textarea><br><br>
+  <div id="result"></div>
+  <br>
+  词库类型&nbsp;
+  <input type="radio" name="type" value="100" checked>全部
+  <input type="radio" name="type" value="0">其他类
+  <input type="radio" name="type" value="1">广告类
+  <input type="radio" name="type" value="2">辱骂类
+  <input type="radio" name="type" value="3">色情类
+  <input type="radio" name="type" value="4">政治类
+
+  <br>匹配等级(单个词或多个词)&nbsp;
+  <input type="radio" name="grade" value="1" checked>最小匹配
+  <input type="radio" name="grade" value="2">最大匹配
+  
+  <br><br>
+  <input type="button" value="检查内容" id="start" style="width:720px;">
+ </div>
+  <script type="text/javascript" src="http://hs.cnfol.com/f=uf/js/jquery-1.12.0.min.js"></script>
+  <script type="text/javascript">
+	$('#start').click(function()
+	{
+		var content = $.trim($('#content').val()),
+			type  = $('input:radio[name="type"]:checked').val(),
+			grade = $('input:radio[name="grade"]:checked').val();
+
+		if(content.length <= 0)
+		{
+			alert('请填写内容');
+			return false;
+		}
+		else
+		{
+			$.ajax({
+				url: 'http://databank.test.api.cnfol.com/v1/checktext.html',
+				cache: false,
+				type: 'get',
+				dataType: 'jsonp',
+				jsonp: 'callback',
+				data: {text:encodeURI(content),type:type,grade:grade},
+				success: function(json)
+				{
+					var msg = '';
+					switch(json['Flag'])
+					{
+						case 0:
+							msg = '内容正常';
+						break;
+						case 1:
+							msg = '内容是广告';
+						break;
+						case 2:
+							msg = '疑似广告';
+						break;
+					}
+
+					$('#result').html('结果:'+msg+'&nbsp;&nbsp;命中敏感词:<font color="red">'+json['keyword'].join(',')+'</font>&nbsp;&nbsp;'+'总耗时:'+json['runtime']);
+
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown)
+				{
+					alert('请求异常'+textStatus);
+				}
+			});
+		}
+	});
+  </script>
+ </body>
+</html>

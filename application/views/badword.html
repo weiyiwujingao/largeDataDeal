@@ -1,0 +1,390 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /><!--用于修正ie8-->
+<title></title>
+<link type="text/css" rel="stylesheet" href="http://hs.cnfol.com/f=ub/Css/Modules/Basis.css,ui/Css/CloudCom/CloudCom.css,uh/Css/ISport/ISport.css,ua/css/cloud/Calendar.css,ui/Css/Select/Select.css,ud/Css/Ad/Css.css,ua/css/AdSystem/AdStyle.css" />
+</head>
+<body>
+<script type="text/javascript">try{document.domain="cnfol.com";}catch(e){}</script>
+    <div class="NavSy" id="flagdh">
+    	<div class="Navlst">
+        	<a href="<?=base_url()?>monitor/index.html?enddate=<?php echo date('Y-m-d');?>&startdate=<?php echo date('Y-m-d');?>" class="">监测统计</a>
+            <a href="<?=base_url()?>badword.html" class="Cur">过滤库</a>
+            <a href="<?=base_url()?>shieldcontent.html" class="">屏蔽管理</a>
+        </div>
+        <div class="MnLst">
+            <a href="<?=base_url()?>badword.html" class="Cur">过滤词库</a>
+            <a href="<?=base_url()?>badimage.html" class="">过滤图库</a>
+        </div>
+    </div>
+    <form class="FmSrch ComWrp" id="FmSrc" name="FmSrc" action="<?=base_url()?>badword.html" method="get">
+    	<label>类型：
+            <select class="SeoSltT1" name="type">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('type'))):?>
+					<?php foreach(config_item('type') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($type) && $type == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+    	<label>来源：
+            <select class="SeoSltT1" name="appid">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('appid'))):?>
+					<?php foreach(config_item('appid') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($appid) && $appid == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+    	<label>状态：
+            <select class="SeoSltT1" name="state">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('state'))):?>
+					<?php foreach(config_item('state') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($state) && $state == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+    	<label>过滤词：
+        	<input name="word" type="text" value="<?=isset($word) ? $word : ''?>">
+        </label>
+        <label>添加时间：
+            <input class="InpDate W100" onclick="showCalendar(this)" value="<?=isset($startdate) ? $startdate : ''?>" name="startdate" type="text"> -
+            <input class="InpDate W100" onclick="showCalendar(this)" value="<?=isset($enddate) ? $enddate : ''?>" name="enddate" type="text">
+        </label>
+        <a href="javascript:FmSrc.submit();" class="BtnSrch">查询</a>
+    </form>
+    <a href="javascript:void(0);" class="BtnDel Mt10" id="BtnAdd">添加</a>
+    <div class="RsltTil">
+        查询结果：
+    </div>
+    <table cellspacing="0" cellpadding="0" border="0" class="ComTabl TbPre" id="Fa1">      
+		<thead>
+            <tr>
+                <th width="15%">过滤词</th>
+				<th width="8%">类别</th>
+                <th width="8%">来源</th>
+                <th width="8%">状态</th>
+                <th width="10%">创建人</th>
+                <th width="20%">添加时间</th>
+                <th width="8%">操作</th>
+            </tr>
+        </thead>
+        <tbody id="TabM">
+		<?php if(isset($data['list']) && !empty($data['list'])):?>
+			<?php foreach($data['list'] as $rs):?>
+				<tr>
+					<td><?=$rs['word']?></td>
+					<td><?=config_item('type')[$rs['type']]?></td>
+					<td><?=config_item('appid')[$rs['appid']]?></td>
+					<td><?=config_item('state')[$rs['state']]?></td>
+					<td><?=$rs['createuser']?></td>
+					<td><?=$rs['uptime']?></td>
+					<td>
+						<a href="javascript:void(0);" onClick="editBadword(<?=$rs['id']?>,'<?=$rs['word']?>',<?=$rs['type']?>,<?=$rs['state']?>)" class="BtnSGry">修改</a>
+						<a href="javascript:void(0);" onClick="delBadword(<?=$rs['id']?>)" class="BtnSGry">删除</a>
+					</td>
+				</tr>
+			<?php endforeach?>
+		<?php else :?>
+			<tr><td colspan="7">暂无数据</td></tr>
+		<?php endif?>
+    	</tbody>
+    </table>
+    <div class="Page">
+		<i class="Fl">共有 <?=isset($data['total']) ? $data['total'] : 0?> 条数据，当前第 <?=$page?> 页</i>
+		<?=isset($pagelink) ? $pagelink : ''?>
+    </div>
+    <!--Add-->
+    <div id="TMAddTmk" class="DiaWin W360">
+        <div class="DWTil Tc"><a class="BtnCls Fr " href="javascript:void(0);" onClick="Dialog.Close()"></a><font id="DiaTit">添加</font></div>
+        <div class="DWCon">
+        	<form class="Myform" id="addFrm">
+                <p class="Mt10 Cf">
+                	<span class="W50 Fl" style="width:70px;">过滤词：</span>
+                    <textarea class="W200" id="add_word"></textarea>
+                </p>
+				<p class="Mt10 Tc" style="color:red">*多个敏感词用英文逗号隔开,最长50个字符</p>
+				<p class="Mt10 Cf">
+					<span class="W50 Fl" style="width:70px;">类型：</span>
+					<select class="SeoSltT1" id="add_type">
+						<?php if(is_array(config_item('type'))):?>
+							<?php foreach(config_item('type') as $id => $name):?>
+								<option value="<?=$id?>"><?=$name?></option>
+							<?php endforeach?>
+						<?php endif?>
+					</select>
+				</p>
+				<p class="Mt10 Cf">
+					<span class="W50 Fl" style="width:70px;">状态：</span>
+					<select class="SeoSltT1" id="add_state">
+						<?php if(is_array(config_item('state'))):?>
+							<?php foreach(config_item('state') as $id => $name):?>
+								<option value="<?=$id?>"><?=$name?></option>
+							<?php endforeach?>
+						<?php endif?>
+					</select>
+				</p>
+                <p class="Mt10 Tc">
+                	<a href="javascript:;" class="BtnSbm" id="addSub">提交</a>
+                    <a href="javascript:;" class="BtnCncl Ml10" onClick="Dialog.Close()">取消</a>
+                </p>
+            </form>
+        </div>
+    </div>
+    <!--Edit-->
+    <div id="TMEditTmk" class="DiaWin W360">
+        <div class="DWTil Tc"><a class="BtnCls Fr " href="javascript:void(0);" onClick="Dialog.Close()"></a><font id="DiaTit">修改</font></div>
+        <div class="DWCon">
+            <form class="Myform" id="editFrm">
+                <p class="Mt10 Cf">
+                    <span class="W50 Fl" style="width:70px;">过滤词：</span>
+                    <textarea class="W200" id="edit_word"></textarea>
+                </p>
+				<p class="Mt10 Cf">
+					<span class="W50 Fl" style="width:70px;">类型：</span>
+					<select class="SeoSltT1" id="edit_type">
+						<?php if(is_array(config_item('type'))):?>
+							<?php foreach(config_item('type') as $id => $name):?>
+								<option value="<?=$id?>"><?=$name?></option>
+							<?php endforeach?>
+						<?php endif?>
+					</select>
+				</p>
+				<p class="Mt10 Cf">
+					<span class="W50 Fl" style="width:70px;">状态：</span>
+					<select class="SeoSltT1" id="edit_state">
+						<?php if(is_array(config_item('state'))):?>
+							<?php foreach(config_item('state') as $id => $name):?>
+								<option value="<?=$id?>"><?=$name?></option>
+							<?php endforeach?>
+						<?php endif?>
+					</select>
+				</p>
+                <p class="Mt10 Tc">
+                    <a href="javascript:;" class="BtnSbm" id="editSub">提交</a>
+                    <a href="javascript:;" class="BtnCncl Ml10" onClick="Dialog.Close()">取消</a>
+                </p>
+            </form>
+        </div>
+    </div>
+	<!--确定删除-->
+	<div id="TMDelTmk" class="DiaWin DWS">
+		<div class="DWTil Tc"><a class="BtnCls Fr" href="javascript:void(0);" onClick="Dialog.Close();"></a>删除</div>
+		<div class="DWCon Tc">
+			<p>是否确认删除？</p>
+			<a id="delSub" href="javascript:void(0);" class="BtnSbm" onClick="Dialog.Close();">确定</a>
+			<a href="javascript:void(0);" class="BtnCncl" onClick="Dialog.Close();">取消</a>
+		</div>
+	</div>
+	<!--确定删除end-->
+<script src="http://hs.cnfol.com/f=Cm/Js/Base.js,Cm/Js/Jquery18.js,ua/js/Clouds/Tables.js,Cm/Js/Checkbox.js,Cm/Js/Dialog6.js,Cm/Js/Forms.js,ui/Js/Kik/Compare.js,ui/Js/Select/Select.js,ua/js/Clouds/Calendar.js?v=201702281022" type="text/javascript"></script>
+<script type="text/javascript" src="http://hs.cnfol.com/f=ue/Js/Cloud/WdatePicker.js"></script>
+<script type="text/javascript">
+	Tables("TabM","Ccl","Ocl");
+
+	var apiurl = "<?=base_url()?>badword/action.html";
+
+   /**
+     * 添加敏感词
+	 *
+	 * @param string add_word 关键词
+	 * @return string
+     */
+	$('#BtnAdd').click(function()
+	{
+        Dialog('TMAddTmk');
+
+		$('#addFrm')[0].reset();
+
+		$('#addSub').unbind('click').bind('click',function()
+		{
+			var word = $.trim($("#add_word").val()),
+				type = $("#add_type").val(),
+				state = $("#add_state").val();
+
+			if(word == '')
+			{
+				alert('请填写敏感词');
+				return false;
+			}
+			if(word.length > 50)
+			{
+				alert('敏感词长度超过限制');
+				return false;
+			}
+			if(type == '')
+			{
+				alert('请选择敏感词类型');
+				return false;
+			}
+			if(state == '')
+			{
+				alert('请选择敏感词状态');
+				return false;
+			}
+			else
+			{
+				$.ajax({
+					url : apiurl,
+					cache : false,
+					type : 'get',
+					dataType : 'json',
+					data : {oper : 'add', word : word, type : type, state : state},
+					success: function(data)
+					{
+						switch(data.flag)
+						{
+							case '00':
+								alert('添加成功!');
+								Dialog.Close();
+								location.reload();
+							break;
+							case '01':
+								alert('敏感词已存在!');
+							break;
+							default:
+								alert('添加失败!');
+							break;
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown)
+					{
+						alert('添加过程出现异常,错误码:'+textStatus);
+					}
+				});
+			}
+        });
+    });
+
+   /**
+     * 修改敏感词
+	 *
+	 * @param integer id    记录ID
+	 * @param string  word  敏感词
+	 * @param integer type  敏感词类型
+	 * @param integer state 敏感词状态
+	 * @return string
+     */
+    function editBadword(id,word,type,state)
+	{
+        Dialog('TMEditTmk');
+
+		$('#editFrm')[0].reset();
+
+			var edit_word  = $("#edit_word"),
+				edit_type  = $("#edit_type"),
+				edit_state = $("#edit_state");
+		
+		edit_word.val(word);
+		edit_type.val(type);
+		edit_state.val(state);
+
+		$('#editSub').unbind('click').bind('click',function()
+		{
+			if(edit_word.val() == '')
+			{
+				alert('请填写敏感词');
+				return false;
+			}
+			if(edit_word.val().length > 50)
+			{
+				alert('敏感词长度超过限制');
+				return false;
+			}
+			if(edit_type.val() == '')
+			{
+				alert('请选择敏感词类型');
+				return false;
+			}
+			if(edit_state.val() == '')
+			{
+				alert('请选择敏感词状态');
+				return false;
+			}
+			else
+			{
+				$.ajax({
+					url : apiurl,
+					cache : false,
+					type : 'get',
+					dataType : 'json',
+					data : {
+					oper : 'edit', id : id,
+					word : edit_word.val(),
+					type : edit_type.val(),
+					state : edit_state.val()},
+					success: function(data)
+					{
+						switch(data.flag)
+						{
+							case '00':
+								alert('修改成功!');
+								Dialog.Close();
+								location.reload();
+							break;
+							default:
+								alert('修改失败!');
+							break;
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown)
+					{
+						alert('修改过程出现异常,错误码:'+textStatus);
+					}
+				});
+			}
+		});
+    }
+
+   /**
+     * 删除敏感词
+	 *
+	 * @param integer id 记录ID
+	 * @return string
+     */
+    function delBadword(id)
+	{
+        Dialog('TMDelTmk');
+
+		$('#delSub').unbind('click').bind('click',function()
+		{
+            Dialog.Close();
+			
+			if(id > 0)
+			{
+				$.ajax({
+					url: apiurl,
+					cache: false,
+					type: 'get',
+					dataType: 'json',
+					data: {oper: 'del', id: id},
+					success: function(data)
+					{
+						switch(data.flag)
+						{
+							case '00':
+								alert('删除成功!');
+								location.reload();
+							break;
+							default:
+								alert('删除失败!');
+							break;
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown)
+					{
+						alert('删除过程出现异常,错误码:'+textStatus);
+					}
+				});
+			}
+        });
+    };
+</script>
+</body>
+</html>

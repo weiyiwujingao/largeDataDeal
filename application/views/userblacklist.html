@@ -1,0 +1,242 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /><!--用于修正ie8-->
+<title></title>
+<link type="text/css" rel="stylesheet" href="http://hs.cnfol.com/f=ub/Css/Modules/Basis.css,ui/Css/CloudCom/CloudCom.css,uh/Css/ISport/ISport.css,ua/css/cloud/Calendar.css,ui/Css/Select/Select.css,ud/Css/Ad/Css.css,ua/css/AdSystem/AdStyle.css" />
+</head>
+<body>
+<script type="text/javascript">try{document.domain="cnfol.com";}catch(e){}</script>
+    <div class="NavSy" id="flagdh">
+    	<div class="Navlst">
+        	<a href="<?=base_url()?>monitor/index.html?enddate=<?php echo date('Y-m-d');?>&startdate=<?php echo date('Y-m-d');?>" class="">监测统计</a>
+            <a href="<?=base_url()?>badword.html" class="">过滤库</a>
+            <a href="<?=base_url()?>shieldcontent.html" class="Cur">屏蔽管理</a>
+        </div>
+        <div class="MnLst">
+            <a href="<?=base_url()?>shieldcontent.html" class="">屏蔽内容管理</a>
+            <a href="<?=base_url()?>shieldimage.html" class="">屏蔽图片管理</a>
+            <a href="<?=base_url()?>reportcontent/index.html" class="">举报内容</a>
+            <a href="<?=base_url()?>ipblacklist.html" class="">ip黑名单</a>
+            <a href="<?=base_url()?>userblacklist.html" class="Cur">用户黑名单</a>
+        </div>
+    </div>
+    <form class="FmSrch ComWrp" id="FmSrc" name="FmSrc" action="<?=base_url()?>userblacklist.html" method="get">
+   	<label>是否实名认证：
+            <select class="SeoSltT1" name="isnameauth">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('authtype'))):?>
+					<?php foreach(config_item('authtype') as $id => $name):?>
+						<option value="<?=$id?>" <?=($isnameauth != '' && $isnameauth == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+        <label>是否手机认证：
+            <select class="SeoSltT1" name="ismobileauth">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('authtype'))):?>
+					<?php foreach(config_item('authtype') as $id => $name):?>
+						<option value="<?=$id?>" <?=($ismobileauth != '' && $ismobileauth == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+    	<label>来源：
+            <select class="SeoSltT1" name="appid">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('appid'))):?>
+					<?php foreach(config_item('appid') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($appid) && $appid == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+        <label>状态：
+            <select class="SeoSltT1" name="state">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('state'))):?>
+					<?php foreach(config_item('state') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($state) && $state == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+    	<label>用户名：
+        	<input name="username" value="<?=isset($username) ? $username : ''?>" type="text">
+        </label>
+        <label>昵称：
+            <input name="nickname" value="<?=isset($nickname) ? $nickname : ''?>" type="text">
+        </label>
+        <label for=" ">私信发送频率：
+             <input name="minsendfrequency" value="<?=isset($minsendfrequency) ? $minsendfrequency :''?>" type="text"> -
+             <input name="maxsendfrequency" value="<?=isset($maxsendfrequency) ? $maxsendfrequency :''?>" type="text">
+        </label>
+        <label for=" ">被屏蔽次数：
+             <input name="minshieldtotal" value="<?=isset($minshieldtotal) ? $minshieldtotal :''?>" type="text"> -
+             <input name="maxshieldtotal" value="<?=isset($maxshieldtotal) ? $maxshieldtotal :''?>" type="text">
+        </label>
+         <label for=" ">注册时间：
+            <input class="InpDate W100" onclick="showCalendar(this)" value="<?=isset($startregtime) ? $startregtime : ''?>" id="startregtime" name="startregtime" type="text"> -
+            <input class="InpDate W100" onclick="showCalendar(this)" value="<?=isset($endregtime) ? $endregtime : ''?>" id="endregtime" name="endregtime" type="text">
+        </label>
+         <label for=" ">最近屏蔽时间：
+            <input class="InpDate W100" onclick="showCalendar(this)" value="<?=isset($startshieldtime) ? $startshieldtime : ''?>" id="startshieldtime" name="startshieldtime" type="text"> -
+            <input class="InpDate W100" onclick="showCalendar(this)" value="<?=isset($endshieldtime) ? $endshieldtime : ''?>" id="endshieldtime" name="endshieldtime" type="text">
+        </label>
+
+        <a href="javascript:;" onclick="javascript:FmSrc.submit();" class="BtnSrch">查询</a>
+    </form>
+    <div class="RsltTil">
+        <a href="javascript:;" class="BtnDel Fr" onClick="edit(null,null)">批量修改状态</a>
+        查询结果：
+    </div>
+    <table  cellspacing="0" cellpadding="0" border="0" class="ComTabl TbPre" id="Fa1">      
+		<thead>
+            <tr>
+                <th width="5%"><label class="Ca" for="Ca"><input type="checkbox" id="Ca" class="Chk" /></label></th>
+                <th width="10%">用户名</th>
+                <th width="10%">昵称</th>
+                <th width="10%">是否实名认证</th>
+                <th width="10%">是否手机认证</th>
+                <th width="10%">私信发送频率</th>
+                <th width="5%">被屏蔽次数</th>
+                <th width="10%">注册时间</th>
+                <th width="5%">来源项目</th>
+                <th width="10%">最近屏蔽时间</th>
+                <th width="5%">状态</th>
+                <th width="10%">操作</th>
+            </tr>
+        </thead>
+        <tbody id="TabM">
+		<?php if(isset($data['list']) && !empty($data['list'])):?>
+			<?php foreach($data['list'] as $rs):?>
+        	<tr>
+                <td><input type="checkbox" class="Chk" value="<?=$rs['id']?>" name="fodderId"/></td>
+				<td><?=$rs['username']?></td>
+				<td><?=$rs['nickname']?></td>
+				<td><?=config_item('authtype')[$rs['isnameauth']]?></td>
+				<td><?=config_item('authtype')[$rs['ismobileauth']]?></td>
+				<td><?=$rs['sendfrequency']?></td>
+				<td><?=$rs['shieldtotal']?></td>
+				<td><?=$rs['regtime']?></td>
+                <td><?=config_item('appid')[$rs['appid']]?></td>
+                <td><?=$rs['shieldtime']?></td>
+                <td><?=config_item('state')[$rs['state']]?></td>
+                <td>
+                    <a href="javascript:void(0);" onClick="edit(<?=$rs['id']?>,'<?=$rs['state']?>')" class="BtnSGry">修改状态</a>
+                </td>
+            </tr>
+			<?php endforeach?>
+		<?php else :?>
+			<tr><td colspan="12">暂无数据</td></tr>
+		<?php endif?>
+    	</tbody>
+    </table>
+    <div class="Page">
+		<i class="Fl">共有 <?=isset($data['total']) ? $data['total'] : 0?> 条数据，当前第 <?=$page?> 页</i>
+		<?=isset($pagelink) ? $pagelink : ''?>
+   </div>
+    <!--Edit-->
+    <div id="TMEditTmk" class="DiaWin W360">
+        <div class="DWTil Tc"><a class="BtnCls Fr " href="javascript:void(0);" onClick="Dialog.Close()"></a><font id="DiaTit">修改状态</font></div>
+        <div class="DWCon">
+            <form class="Myform" id="editFrm">
+               <p class="Mt10 Tc">   
+                状态：
+				<select class="SeoSltT1" id="edit_state">
+					<?php if(is_array(config_item('state'))):?>
+						<?php foreach(config_item('state') as $id => $name):?>
+							<option value="<?=$id?>"><?=$name?></option>
+						<?php endforeach?>
+					<?php endif?>
+				</select>
+                </p>
+                <p class="Mt10 Tc">
+                    <a href="javascript:;" class="BtnSbm" id="editSub">提交</a>
+                    <a href="javascript:;" class="BtnCncl Ml10" onClick="Dialog.Close()">取消</a>
+                </p>
+            </form>
+        </div>
+    </div>
+<script src="http://hs.cnfol.com/f=Cm/Js/Base.js,Cm/Js/Jquery18.js,ua/js/Clouds/Tables.js,Cm/Js/Checkbox.js,Cm/Js/Dialog6.js,Cm/Js/Forms.js,ui/Js/Kik/Compare.js,ui/Js/Select/Select.js,ua/js/Clouds/Calendar.js,Cm/Js/ShowInfo.js?v=201702281022" type="text/javascript"></script>
+<script type="text/javascript" src="http://hs.cnfol.com/f=ue/Js/Cloud/WdatePicker.js"></script>
+
+<script type="text/javascript">
+	Tables("TabM","Ccl","Ocl");
+	Checkbox("Fa1");
+
+	var apiurl = "<?=base_url()?>userblacklist/action.html";
+
+   /**
+     * 修改
+	 *
+	 * @param integer id    记录ID
+	 * @param integer state 状态
+	 * @return string
+     */
+    function edit(id,state)
+	{
+        Dialog('TMEditTmk');
+
+		$('#editFrm')[0].reset();
+		
+		if(id && id > 0)
+			$('#edit_state').val(state);
+		else
+			id = getCheckBox().join(',');
+
+		$('#editSub').unbind('click').bind('click',function()
+		{
+			if(id.length <= 0)
+			{
+				alert('请选择修改项');
+				return false;
+			}
+			else
+			{
+				$.ajax({
+					url : apiurl,
+					cache : false,
+					type : 'get',
+					dataType : 'json',
+					data : {oper : 'edit', id : id, state : $('#edit_state').val()},
+					success : function(data)
+					{
+						switch(data.flag)
+						{
+							case '00':
+								alert('修改成功!');
+								Dialog.Close();
+								location.reload();
+							break;
+							default:
+								alert('修改失败!');
+							break;
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown)
+					{
+						alert('修改过程出现异常,错误码:'+textStatus);
+					}
+				});
+			}
+		});
+    }
+
+	function getCheckBox()
+	{
+		var chk_value = [];
+
+		$('input[name="fodderId"]:checked').each(function()
+		{ 
+			chk_value.push($(this).val()); 
+		});
+
+		return chk_value;
+	}
+</script>
+
+</body>
+</html>

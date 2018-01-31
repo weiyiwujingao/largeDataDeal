@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> 测试页面 </title>
+	<meta charset="utf-8">
+ </head>
+
+ <body style="font-size:12px;">
+ <div style="text-align:left">
+	内容1:<textarea id="text1" name="text1" rows="10" cols="50"></textarea>
+	内容2:<textarea id="text2" name="text2" rows="10" cols="50"></textarea><br>
+ <input type="button" value="开始比较" id="start">
+ <br><br>
+ <div id="runtime"></div>
+ <div id="sample"></div>
+ <div id="likesample"></div>
+ </div>
+  <script type="text/javascript" src="http://hs.cnfol.com/f=uf/js/jquery-1.12.0.min.js"></script>
+  <script type="text/javascript">
+	$('#start').click(function()
+	{
+		var limit = $.trim($('#limit').val()),
+			articleid = $.trim($('#articleid').val()),
+			isreturn  = $('input:radio[name="isreturn"]:checked').val(),
+			grade     = $('input:radio[name="grade"]:checked').val();
+		if(articleid.length <= 0)
+		{
+			alert('请输入有效的文章ID');
+			return false;
+		}
+		if(limit.length <= 0)
+		{
+			alert('请输入匹配条数,最大为1000');
+			return false;
+		}
+		else
+		{
+			$.ajax({
+				url: 'http://databank.test.api.cnfol.com/v1/similararticle.html',
+				cache: false,
+				type: 'get',
+				dataType: 'jsonp',
+				jsonp: 'callback',
+				data: {aid:articleid,isreturn:isreturn,grade:grade,limit:limit},
+				success: function(json)
+				{
+					switch(json['Code'])
+					{
+						case 200:
+							if(isreturn > 0)
+							{
+								$('#sample').html('原文============================<br>'+json['sample']+'<br>');
+
+								var likesample = '';
+
+								$.each(json['likesample'],function(index,value){
+									likesample += '相似文章============================<br>'+value+'<br>';
+									 
+								});
+								$('#likesample').html(likesample);
+							}
+							else
+							{
+								$('#likesample').html('相似文章ID:'+json['ids'].join(','));
+							}
+						break;
+						case 4000:
+							$('#sample').html(json['Msg']);
+						break;
+					}
+
+					$('#runtime').html('匹配耗时:'+json['runtime']);
+
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown)
+				{
+					alert('请求异常'+textStatus);
+				}
+			});
+		}
+	});
+  </script>
+ </body>
+</html>

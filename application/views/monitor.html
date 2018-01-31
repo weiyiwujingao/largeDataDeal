@@ -1,0 +1,297 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /><!--用于修正ie8-->
+<title></title>
+<link type="text/css" rel="stylesheet" href="http://hs.cnfol.com/f=ub/Css/Modules/Basis.css,ui/Css/CloudCom/CloudCom.css,uh/Css/ISport/ISport.css,ua/css/cloud/Calendar.css,ui/Css/Select/Select.css,ud/Css/Ad/Css.css,ua/css/AdSystem/AdStyle.css?v=<?php echo time();?>" /></head>
+<link rel="stylesheet" type="text/css" href="http://hs.cnfol.com/uk/Css/IntelligentFiltering/monitors.css">
+<body>
+<script type="text/javascript">try{document.domain="cnfol.com";}catch(e){}</script>
+    <div class="NavSy" id="flagdh">
+    	<div class="Navlst">
+        	<a href="<?=base_url()?>monitor/index.html?enddate=<?php echo date('Y-m-d');?>&startdate=<?php echo date('Y-m-d');?>" class="Cur">检测统计</a>
+            <a href="<?=base_url()?>badword.html" class="">过滤库</a>
+            <a href="<?=base_url()?>shieldcontent.html" class="">屏蔽管理</a>
+        </div>
+         <div class="MnLst">
+            时间：
+            <a href="<?php echo base_url().'monitor/index.html?enddate='.date('Y-m-d').'&startdate='.date('Y-m-d').'&ord=0';?>" class="<?php echo $ord?'':'Cur';?>">今天</a>
+            <a href="<?php echo base_url().'monitor/index.html?enddate='.date('Y-m-d',time()-86400).'&startdate='.date('Y-m-d',time()-86400).'&ord=1';?>" class="<?php echo $ord==1?'Cur':'';?>">昨天</a>
+            <a href="<?php echo base_url().'monitor/index.html?enddate='.date('Y-m-d').'&startdate='.date('Y-m-d',time()-86400*7).'&ord=2';?>" class="<?php echo $ord==2?'Cur':'';?>">最近7天</a>
+            <a href="<?php echo base_url().'monitor/index.html?enddate='.date('Y-m-d').'&startdate='.date('Y-m-d',time()-86400*30).'&ord=3';?>" class="<?php echo $ord==3?'Cur':'';?>">最近30天</a>
+            <a href="javascript:;" class="customTit <?php echo $ord==4?'Cur':'';?>">自定义</a>
+        </div>
+    </div>
+    <form class="FmSrch ComWrp" name="searchForm" action="" method="post" id="custom">
+        <label for="">自定义：
+            <input class="InpDate W100" onclick="showCalendar(this)" value="" id="starttime" name="DateStart" type="text"> -
+            <input class="InpDate W100" onclick="showCalendar(this)" value="" id="endtime" name="DateEnd" type="text">
+        </label>
+        
+        <a onclick="jumst();" class="BtnSrch">查询</a>
+    </form>
+    <div class="titles">
+        <ul class="clearfix">
+            <li><a href="<?=base_url()?>userblacklist.html">新增黑名单用户<p><span class="num"><?=$totaluser?></span><span class="upIcon">↑</span></p></a></li>
+            <li><a href="<?=base_url()?>shieldcontent.html">新增屏蔽数<p><span class="num"><?=$total?></span><span class="upIcon">↑</span></p></a></li>
+            <li><a href="<?=base_url()?>badword.html">新增过滤词<p><span class="num"><?=$totalword?></span><span class="upIcon">↑</span></p></a></li>
+            <li><a href="#">屏蔽错误率<p><span class="num">50%</span><span class="upIcon">↑</span></p></a></li>
+        </ul>
+    </div>
+    <div class="main-cont clearfix">
+         <div class="content fl">
+        <h2>趋势分析图（屏蔽条数）<a href="<?=base_url()?>shieldcontent.html" class="rightIcon">→</a></h2>
+       <!--<div class="pk">对比:<input type="checkbox">前一日<input type="checkbox">上周同期</div>--> 
+       
+        <div id="container" style="height: 300px;width:500px;margin:40px auto 0;"></div>
+    </div>
+    <div class="content fr">
+        <h2>来源平台占比<a href="屏蔽内容管理.html" class="rightIcon">→</a></h2>
+        <div id="container2" style="height: 300px;width:500px;margin:40px auto 0;"></div>
+    </div>
+    <div class="content fl">
+        <h2>TOP10屏蔽词<a href="过滤词库.html" class="rightIcon">→</a></h2>
+        <table>
+            <tr>
+                <th width="50%">关键词</th>
+                <th width="25%">屏蔽数</th>
+                <th width="25%">占比</th>
+            </tr>
+            <?php if(isset($alltopword['list']) && $alltopword['list']) :?>
+            <?php foreach($alltopword['list'] as $k=>$v) :?>
+            <tr>
+                <td><?=$v['hitword']?></td>
+                <td><?=$v['num']?>条</td>
+                <td><?php echo sprintf("%.2f", ($v['num']/$alltopword['total'])*100)?>%</td>
+            </tr>
+            <?php endforeach?>
+            <?php endif?>
+            
+        </table>
+    </div>
+    <div class="content fr">
+        <h2>新增过滤词<a href="<?=base_url()?>badword.html" class="rightIcon">→</a></h2>
+        <table>
+            <tr>
+                <th width="50%">过滤词</th>
+                <th width="25%">屏蔽数</th>
+                <th width="25%">新增时间</th>
+            </tr>
+            <?php if(isset($newtopword['list']) && $newtopword['list']) :?>
+            <?php foreach($newtopword['list'] as $k=>$v) :?>
+            <tr>
+                <td><?=$v['hitword']?></td>
+                <td><?=$v['num']?>条</td>
+                <td><?php echo sprintf("%.2f", ($v['num']/$newtopword['total'])*100)?>%</td>
+            </tr>
+            <?php endforeach?>
+            <?php endif?>
+        </table>
+    </div>
+    <div class="content fl">
+        <h2>被屏蔽IP所属地区<a href="<?=base_url()?>ipblacklist.html" class="rightIcon">→</a></h2>
+        <div id="container3" style="height:350px;width:500px;margin:0 auto;">加载地图数据中</div>
+    </div>
+    <div class="content fr">
+        <h2>TOP10 问题IP<a href="<?=base_url()?>ipblacklist.html" class="rightIcon">→</a></h2>
+         <table>
+            <tr>
+                <th width="25%">IP</th>
+                <th width="25%">屏蔽条数</th>
+            </tr>
+            <?php if(isset($ipstopword) && $ipstopword) :?>
+            <?php foreach($ipstopword as $k=>$v):?>
+            <tr>
+                <td><?=$v['userip']?></td>
+                <td><?=$v['num']?>条</td>
+            </tr>
+            <?php endforeach?>
+            <?php endif?>
+        </table>
+    </div>
+    </div>
+   
+<script src="http://hs.cnfol.com/Cm/Js/Jquery18.js?v=201702281022" type="text/javascript"></script>
+
+
+<script src="http://hs.cnfol.com/uk/Js/highcharts/highcharts.js"></script>
+<script src="http://hs.cnfol.com/uk/Js/highcharts/map.js"></script>
+<script src="http://hs.cnfol.com/uk/Js/highcharts/cn-with-citys.js"></script>
+
+<script src="http://hs.cnfol.com/f=Cm/Js/Base.js,ua/js/Clouds/Tables.js,Cm/Js/Checkbox.js,Cm/Js/Dialog6.js,Cm/Js/Forms.js,ui/Js/Kik/Compare.js,ui/Js/Select/Select.js,ua/js/Clouds/Calendar.js,Cm/Js/ShowInfo.js?v=201702281022" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+var url = "<?php echo base_url();?>";
+var time= "<?php echo date('Y-m-d');?>";
+  // 趋势分析图（屏蔽条数）
+function AnalysisChart(time){
+	Highcharts.chart('container', {
+    chart: {
+        type: 'line'
+    },
+    title: {
+        text: ''
+    },
+    xAxis: {
+        labels: {
+            formatter: function () {
+                return this.value; // clean, unformatted number for year
+            }
+        }
+    },
+    yAxis: {
+        title: {
+            text: ''
+        }
+    },
+    tooltip: {
+        pointFormat: '{series.name} <b>{point.y:,.0f}</b><br/>'
+    },
+    series: [{
+        name: time+'屏蔽数',
+        color:'#b5dafc',
+        data: data
+    }]
+});	
+}
+data = <?php echo $data;?>;
+AnalysisChart("<?=$startdate?>",data);
+
+// 来源平台占比
+    // Build the chart
+    Highcharts.chart('container2', {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title: {
+            text: ''
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                     format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                },
+                showInLegend: true,
+                events:{  
+                        click: function(e) {  
+                            alert("点击");
+                        }
+                }
+            }
+           
+
+        },
+        series: [{
+            name: 'Brands',
+            colorByPoint: true,
+            innerSize: '70%',
+            data: <?=$sourcelis?>
+        }]
+    });
+
+
+    // 被屏蔽IP所属地区
+    // Prepare random data
+    var data = <?=$arelist?>;
+    var mapData = [];
+    var mapArray = Highcharts.maps['cn-with-city'];
+    var mappoint = Highcharts.geojson(mapArray, 'mappoint');
+    $('#container3').highcharts('Map', {
+        title: {
+            text: null
+        },
+        credits: {
+            enabled: false
+        },
+       
+        mapNavigation: {
+            enabled: false,
+            buttonOptions: {
+                verticalAlign: 'bottom'
+            }
+        },
+       colorAxis: {
+            stops: [
+                [0, 'rgba(235,243,252,0.05)'],
+                [0.5, 'rgba(142,187,238,0.5)'],
+                [1, 'rgba(53,133,225,1)']
+            ]
+        },
+        tooltip: {
+              padding:10,
+              headerFormat: '<span></span>',
+              pointFormat: '<b style="font-size:14px;">{point.name}</b><br>{series.name}<b>{point.value}</b><br>',
+              footerFormat: '占比<b>{point.percentage}%</b>'
+        },
+        series: [{
+            type: 'mapbubble',
+            name: '浏览量',
+            dataLabels: {
+                enabled: false,
+                // format: '{point.name}',
+                style: {
+                    fontSize: '8px',
+                    color: '#000'
+                }
+            },
+            zIndex: 1000
+        }, {
+            // Basic China map
+            data: data,
+            mapData: mapArray,
+            joinBy: ['name', 'name'],
+            name: '浏览量',
+            color: '#000',
+            negativeColor: '',
+            showInLegend: true,
+            states: {
+                hover: {
+                    color: 'yellow'
+                }
+            },
+            events:{
+                click:function(e){
+                     alert("点击");
+                }
+            },
+            cursor:'pointer'
+        }]
+    }, function(map) {
+        console.log("Map init ok!");
+    });
+function jumst(){
+    var starttime = '',endtime='';
+    starttime = $('#starttime').val();
+    endtime   = $('#endtime').val();
+    if(endtime==''){
+        endtime = time;
+    } 
+    reurl = url+'monitor/index.html?enddate='+endtime+'&startdate='+starttime+'&ord=4'; 
+    window.location.href = reurl;
+}
+// 点击显示自定义
+$(".MnLst").find("a").eq(4).on("click",function(){
+    $("#custom").show();
+    $(this).addClass("Cur").siblings().removeClass("Cur");
+})
+
+$(".MnLst").find("a").not(".customTit").on("click",function(){
+    $("#custom").hide();
+    $(this).addClass("Cur").siblings().removeClass("Cur");
+})
+</script>
+    
+</body>
+</html>

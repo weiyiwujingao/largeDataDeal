@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> 测试页面 </title>
+	<meta charset="utf-8">
+ </head>
+
+ <body style="font-size:12px;">
+ <div style="text-align:left">
+  返回内容:&nbsp;
+  <input type="radio" name="isreturn" value="1" checked>是
+  <input type="radio" name="isreturn" value="0">否
+   <br>
+<!--   <br>
+  是否全匹配:&nbsp;
+  <input type="radio" name="all" value="1" checked>是
+  <input type="radio" name="all" value="0">否 -->
+  <br>
+   <br>
+<!--   搜索范围:&nbsp;
+  <input type="radio" name="type" value="1" checked>只匹配内容
+  <input type="radio" name="type" value="2">只匹配标题
+   <input type="radio" name="type" value="0">内容加标题都比配 -->
+  <br>
+  <br>
+ 关键词串:<input type="text" id="keyword" name="keyword" size="50">&nbsp;
+ 获取条数:<input type="text" id="limit" name="limit" value="20" size="1">&nbsp;
+ <input type="button" value="开始匹配" id="start">
+ <br><br>
+ <div id="runtime"></div>
+ <div id="keywords"></div>
+  <div id="count"></div>
+ <div id="content"></div>
+ 
+ </div>
+  <script type="text/javascript" src="http://hs.cnfol.com/f=uf/js/jquery-1.12.0.min.js"></script>
+  <script type="text/javascript">
+	$('#start').click(function()
+	{
+		var limit = $.trim($('#limit').val()),
+			keyword = $.trim($('#keyword').val()),
+			isreturn  = $('input:radio[name="isreturn"]:checked').val(),
+			// all  = $('input:radio[name="all"]:checked').val(),
+			all = 0,
+			type  = $('input:radio[name="type"]:checked').val(),
+			grade     = $('input:radio[name="grade"]:checked').val();
+		if(keyword.length <= 0)
+		{
+			alert('请输入有效的关键词');
+			return false;
+		}
+		if(limit.length < 0)
+		{
+			alert('请输入匹配条数,最大为1000');
+			return false;
+		}
+		else
+		{
+			$.ajax({
+				url: 'http://databank.test.api.cnfol.com/v2/searcharticle2.html',
+				cache: false,
+				type: 'get',
+				dataType: 'jsonp',
+				jsonp: 'callback',
+				data: {keyword:keyword,isreturn:isreturn,limit:limit,all:all,type:type},
+				success: function(json)
+				{
+					// console.log(json);
+					var keywords = '关键词命中:' + json['words'].join(',');
+					$('#count').html('总条数为:' +json['total']);
+					$('#keywords').html('<br>'+keywords);
+					switch(json['Code'])
+					{
+						case 200:
+							var content = '文章ID:' + json['ids'].join(',');					
+							if(isreturn > 0)
+							{								
+								$.each(json['title'],function(index,value){
+									for(var i=0; i<json['word'].length;i++){
+											json['title'][index]=json['title'][index].replace(json['word'][i],'<span class="link">'+json['word'][i]+'</span>');
+										}
+									content += '<br>文章'+(index+1)+'============================<br>标题：<a href="'+json['url'][index]+'" target="_blank">'+json['title'][index].replace(keyword,'<span class="link">'+keyword+'</span>')+'</a><br>';
+									 
+								});
+								$('#content').html(json['Msg']+'<br>'+content);
+							}else{
+								$('#content').html('');
+							}
+						break;
+						case 4000:
+							$('#content').html('');
+							$('#runtime').html(json['Msg']);
+						break;
+					}
+					
+					$('#runtime').html('');
+					$('#runtime').html('匹配耗时:'+json['runtime'] + '&nbsp;&nbsp;' + $('#runtime').html());
+
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown)
+				{
+					alert('请求异常'+textStatus);
+				}
+			});
+		}
+	});
+  </script>
+  <style type="text/css">
+	.link{color: red;text-shadow:0 1px 1px rgba(0,0,0,0.1);font-size: 12pt;}
+  </style>
+ </body>
+</html>

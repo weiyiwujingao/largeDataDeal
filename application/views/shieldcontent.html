@@ -1,0 +1,284 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /><!--用于修正ie8-->
+<title></title>
+<link type="text/css" rel="stylesheet" href="http://hs.cnfol.com/f=ub/Css/Modules/Basis.css,ui/Css/CloudCom/CloudCom.css,uh/Css/ISport/ISport.css,ua/css/cloud/Calendar.css,ui/Css/Select/Select.css,ud/Css/Ad/Css.css,ua/css/AdSystem/AdStyle.css" />
+
+</head>
+<body>
+<script type="text/javascript">try{document.domain="cnfol.com";}catch(e){}</script>
+    <div class="NavSy" id="flagdh">
+    	<div class="Navlst">
+        	<a href="<?=base_url()?>monitor/index.html?enddate=<?php echo date('Y-m-d');?>&startdate=<?php echo date('Y-m-d');?>" class="">监测统计</a>
+            <a href="<?=base_url()?>badword.html" class="">过滤库</a>
+            <a href="<?=base_url()?>shieldcontent.html" class="Cur">屏蔽管理</a>
+        </div>
+        <div class="MnLst">
+            <a href="<?=base_url()?>shieldcontent.html" class="Cur">屏蔽内容管理</a>
+            <a href="<?=base_url()?>shieldimage.html" class="">屏蔽图片管理</a>
+            <a href="<?=base_url()?>reportcontent/index.html" class="">举报内容</a>
+            <a href="<?=base_url()?>ipblacklist.html" class="">ip黑名单</a>
+            <a href="<?=base_url()?>userblacklist.html" class="">用户黑名单</a>
+        </div>
+    </div>
+    <form class="FmSrch ComWrp" id="FmSrc" name="FmSrc" action="<?=base_url()?>shieldcontent.html" method="get">
+    	<label>内容形式：
+            <select class="SeoSltT1" name="datatype">
+            	<option value="99">全部</option>
+ 				<?php if(is_array(config_item('datatype'))):?>
+					<?php foreach(config_item('datatype') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($datatype) && $datatype == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+    	<label>来源：
+            <select class="SeoSltT1" name="appid">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('appid'))):?>
+					<?php foreach(config_item('appid') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($appid) && $appid == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+        <label>状态：
+            <select class="SeoSltT1" name="state">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('state'))):?>
+					<?php foreach(config_item('state') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($state) && $state == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+    	<label>屏蔽内容：
+        	<input name="content" value="<?=isset($content) ? $content : ''?>" type="text">
+        </label>
+        <label>命中关键字：
+            <input name="hitword" value="<?=isset($hitword) ? $hitword : ''?>" type="text">
+        </label>
+        <label>发表人ip：
+            <input name="userip" value="<?=isset($userip) ? $userip : ''?>" type="text">
+        </label>
+        <label>屏蔽时间：
+            <input class="InpDate W100" onclick="showCalendar(this)" value="<?=isset($startdate) ? $startdate : ''?>" name="startdate" type="text"> -
+            <input class="InpDate W100" onclick="showCalendar(this)" value="<?=isset($enddate) ? $enddate : ''?>" name="enddate" type="text">
+        </label>
+        <a href="javascript:FmSrc.submit();" class="BtnSrch">查询</a>
+    </form>
+    <div class="RsltTil">
+        <a href="javascript:;" class="BtnDel Fr" onClick="editContent(null,null)">批量修改状态</a>
+        查询结果：
+    </div>
+    <table cellspacing="0" cellpadding="0" border="0" class="ComTabl TbPre" id="Fa1">      
+		<thead>
+            <tr>
+                <th width="5%"><label class="Ca" for="Ca"><input type="checkbox" id="Ca" class="Chk" /></label></th>
+                <th width="20%">屏蔽内容</th>
+                <th width="10%">内容形式</th>
+                <th width="10%">来源项目</th>
+                <th width="10%">命中过滤词</th>
+                <th width="10%">发表人ip</th>
+                <th width="15%">屏蔽时间</th>
+                <th width="10%">状态</th>
+                <th width="10%">操作</th>
+            </tr>
+        </thead>
+        <tbody id="TabM">
+		<?php if(isset($data['list']) && !empty($data['list'])):?>
+			<?php foreach($data['list'] as $rs):?>
+        	<tr >
+                <td><input type="checkbox" class="Chk" value="<?=$rs['id']?>" name="fodderId"/></td>
+                <td>
+                    <a href="#" class="Nrp" name="Ms1" onMouseOver="Compare('Con1','FlwWrp')">
+					<i class="CoRed"><?=$rs['content']?></i></a>
+					<div id="Con1" class="PsiR" style="text-align:left; display:none;">
+						<div class="FlwWrp" style="left:40px;*top:-20px;">
+							<span class="SlpArw"></span>
+							<div class="Con"><?=$rs['content']?></div>
+						</div>
+					</div>
+                </td>
+                <td><?=config_item('datatype')[$rs['datatype']]?></td>
+                <td><?=config_item('appid')[$rs['appid']]?></td>
+                <td><?=$rs['hitword']?></td>
+                <td><?=$rs['userip']?></td>
+                <td><?=$rs['uptime']?></td>
+                <td><?=config_item('state')[$rs['state']]?></td>
+                <td>
+                    <a href="javascript:void(0);" onClick="editContent(<?=$rs['id']?>,<?=$rs['state']?>)" class="BtnSGry">修改状态</a>
+                    <a href="javascript:void(0);" onClick="delContent(<?=$rs['id']?>)" class="BtnSGry">删除</a>
+                </td>
+            </tr>
+			<?php endforeach?>
+		<?php else :?>
+			<tr><td colspan="9">暂无数据</td></tr>
+		<?php endif?>
+    	</tbody>
+    </table>
+    <div class="TabBtmBx">
+        <span>屏蔽错误率：50%</span>
+    </div>
+    <div class="Page">
+		<i class="Fl">共有 <?=isset($data['total']) ? $data['total'] : 0?> 条数据，当前第 <?=$page?> 页</i>
+		<?=isset($pagelink) ? $pagelink : ''?>
+    </div>
+    <!--Edit-->
+    <div id="TMEditTmk" class="DiaWin W360">
+        <div class="DWTil Tc"><a class="BtnCls Fr " href="javascript:void(0);" onClick="Dialog.Close()"></a><font id="DiaTit">修改状态</font></div>
+        <div class="DWCon">
+            <form class="Myform" id="editFrm">
+               <p class="Mt10 Tc">   
+                状态：
+				<select class="SeoSltT1" id="edit_state">
+					<?php if(is_array(config_item('state'))):?>
+						<?php foreach(config_item('state') as $id => $name):?>
+							<option value="<?=$id?>"><?=$name?></option>
+						<?php endforeach?>
+					<?php endif?>
+				</select>
+                </p>
+                <p class="Mt10 Tc">
+                    <a href="javascript:;" class="BtnSbm" id="editSub">提交</a>
+                    <a href="javascript:;" class="BtnCncl Ml10" onClick="Dialog.Close()">取消</a>
+                </p>
+            </form>
+        </div>
+    </div>
+	<!--确定删除-->
+	<div id="TMDelTmk" class="DiaWin DWS">
+		<div class="DWTil Tc"><a class="BtnCls Fr" href="javascript:void(0);" onClick="Dialog.Close();"></a>删除</div>
+		<div class="DWCon Tc">
+			<p>是否确认删除？</p>
+			<a id="delSub" href="javascript:void(0);" class="BtnSbm" onClick="Dialog.Close();">确定</a>
+			<a href="javascript:void(0);" class="BtnCncl" onClick="Dialog.Close();">取消</a>
+		</div>
+	</div>
+	<!--确定删除end-->
+<script src="http://hs.cnfol.com/f=Cm/Js/Base.js,Cm/Js/Jquery18.js,ua/js/Clouds/Tables.js,Cm/Js/Checkbox.js,Cm/Js/Dialog6.js,Cm/Js/Forms.js,ui/Js/Kik/Compare.js,ui/Js/Select/Select.js,ua/js/Clouds/Calendar.js,Cm/Js/ShowInfo.js?v=201702281022" type="text/javascript"></script>
+<script type="text/javascript" src="http://hs.cnfol.com/f=ue/Js/Cloud/WdatePicker.js"></script>
+<script type="text/javascript">
+	Tables("TabM","Ccl","Ocl");
+	Checkbox("Fa1");
+	ShowInfo(C.Gsn("Ms1"));
+	
+	var apiurl = "<?=base_url()?>shieldcontent/action.html";
+
+   /**
+     * 修改屏蔽内容
+	 *
+	 * @param integer id    记录ID
+	 * @param integer state 敏感词状态
+	 * @return string
+     */
+    function editContent(id,state)
+	{
+        Dialog('TMEditTmk');
+
+		$('#editFrm')[0].reset();
+		
+		if(id && id > 0)
+			$('#edit_state').val(state);
+		else
+			id = getCheckBox().join(',');
+
+		$('#editSub').unbind('click').bind('click',function()
+		{
+			if(id.length <= 0)
+			{
+				alert('请选择修改项');
+				return false;
+			}
+			else
+			{
+				$.ajax({
+					url : apiurl,
+					cache : false,
+					type : 'get',
+					dataType : 'json',
+					data : {oper : 'edit', id : id, state : $('#edit_state').val()},
+					success : function(data)
+					{
+						switch(data.flag)
+						{
+							case '00':
+								alert('修改成功!');
+								Dialog.Close();
+								location.reload();
+							break;
+							default:
+								alert('修改失败!');
+							break;
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown)
+					{
+						alert('修改过程出现异常,错误码:'+textStatus);
+					}
+				});
+			}
+		});
+    }
+
+   /**
+     * 删除屏蔽内容
+	 *
+	 * @param integer id 记录ID
+	 * @return string
+     */
+    function delContent(id)
+	{
+        Dialog('TMDelTmk');
+
+		$('#delSub').unbind('click').bind('click',function()
+		{
+            Dialog.Close();
+			
+			if(id > 0)
+			{
+				$.ajax({
+					url: apiurl,
+					cache: false,
+					type: 'get',
+					dataType: 'json',
+					data: {oper: 'del', id: id},
+					success: function(data)
+					{
+						switch(data.flag)
+						{
+							case '00':
+								alert('删除成功!');
+								location.reload();
+							break;
+							default:
+								alert('删除失败!');
+							break;
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown)
+					{
+						alert('删除过程出现异常,错误码:'+textStatus);
+					}
+				});
+			}
+        });
+    };
+
+	function getCheckBox()
+	{
+		var chk_value = [];
+
+		$('input[name="fodderId"]:checked').each(function()
+		{ 
+			chk_value.push($(this).val()); 
+		});
+
+		return chk_value;
+	}
+
+</script>  
+</body>
+</html>

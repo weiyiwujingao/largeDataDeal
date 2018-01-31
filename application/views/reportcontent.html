@@ -1,0 +1,329 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /><!--用于修正ie8-->
+<title>举报内容审核页面</title>
+<link type="text/css" rel="stylesheet" href="http://hs.cnfol.com/f=ub/Css/Modules/Basis.css,ui/Css/CloudCom/CloudCom.css,uh/Css/ISport/ISport.css,ua/css/cloud/Calendar.css,ui/Css/Select/Select.css,ud/Css/Ad/Css.css,ua/css/AdSystem/AdStyle.css" />
+</head>
+<body>
+<script type="text/javascript">try{document.domain="cnfol.com";}catch(e){}</script>
+   <div class="NavSy" id="flagdh">
+    	<div class="Navlst">
+        	<a href="<?=base_url()?>monitor/index.html?enddate=<?php echo date('Y-m-d');?>&startdate=<?php echo date('Y-m-d');?>" class="">监测统计</a>
+            <a href="<?=base_url()?>badword.html" class="">过滤库</a>
+            <a href="<?=base_url()?>shieldcontent.html" class="Cur">屏蔽管理</a>
+        </div>
+        <div class="MnLst">
+            <a href="<?=base_url()?>shieldcontent.html" class="Cur">屏蔽内容管理</a>
+            <a href="<?=base_url()?>shieldimage.html" class="">屏蔽图片管理</a>
+            <a href="<?=base_url()?>reportcontent/index.html" class="">举报内容</a>
+            <a href="<?=base_url()?>ipblacklist.html" class="">ip黑名单</a>
+            <a href="<?=base_url()?>userblacklist.html" class="">用户黑名单</a>
+        </div>
+    </div>
+    <form class="FmSrch ComWrp" name="searchForm" action="<?=base_url()?>reportcontent/index.html" method="get">
+    	<label>举报内容：
+        	<input name="content" value="" type="text">
+        </label>
+    	<label>内容形式：
+            <select class="SeoSltT1" name="datatype">
+            	<option value="99">全部</option>
+ 				<?php if(is_array(config_item('datatype'))):?>
+					<?php foreach(config_item('datatype') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($datatype) && $datatype == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+    	<label>项目来源：
+            <select class="SeoSltT1" name="appid">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('appid'))):?>
+					<?php foreach(config_item('appid') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($appid) && $appid == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+        
+        <label>举报类型：
+            <select class="SeoSltT1" name="type">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('type'))):?>
+					<?php foreach(config_item('type') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($type) && $type == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+        <label>举报人：
+            <input name="user" value="" type="text">
+        </label>
+        <label>被举报人：
+            <input name="reportuser" value="" type="text">
+        </label>
+        <label>被举报人ip：
+            <input name="reportuserip" value="" type="text" >
+        </label>
+        <label for=" ">举报时间：
+            <input class="InpDate W100" onclick="showCalendar(this)" value="" id="DateStart" name="startdate" type="text"> -
+            <input class="InpDate W100" onclick="showCalendar(this)" value="" id="DateEnd" name="enddate" type="text">
+        </label>
+        <label>状态：
+            <select class="SeoSltT1" name="state">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('state'))):?>
+					<?php foreach(config_item('state') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($state) && $state == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+        <a href="javascript:;" onclick="javascript:document.searchForm.submit();" class="BtnSrch">查询</a>
+    </form>
+    
+	<!--<a href="javascript:;" class="BtnAdd" onClick="Add()">添加</a>-->
+    <div class="RsltTil">
+
+        查询结果：
+    </div>
+    <table  cellspacing="0" cellpadding="0" border="0" class="ComTabl TbPre" id="Fa1">      
+		<thead>
+            <tr>
+                <th width="5%"><label class="Ca" for="Ca"><input type="checkbox" id="Ca" class="Chk" /></label></th>
+                <th width="20%">举报内容</th>
+                <th width="5%">内容形式</th>
+                <th width="5%">来源项目</th>
+                <th width="10%">举报类型</th>
+                <th width="5%">举报人</th>
+                <th width="5%">被举报人</th>
+                <th width="10%">被举报人IP</th>
+                <th width="15%">举报时间</th>
+                <th width="10%">状态</th>
+                <th width="10%">操作</th>
+            </tr>
+        </thead>
+        <tbody id="TabM">
+        <?php if(isset($data['list']) && !empty($data['list'])):?>
+			<?php foreach($data['list'] as $rs):?>
+        	<tr >
+                <td><input type="checkbox" class="Chk" value="<?=$rs['id']?>" name="fodderId"/></td>
+                <td>
+                    <a href="#" class="Nrp" name="Ms1" onMouseOver="Compare('Con1','FlwWrp')">
+					<i class="CoRed"><?=$rs['content']?></i></a>
+					<div id="Con1" class="PsiR" style="text-align:left; display:none;">
+						<div class="FlwWrp" style="left:40px;*top:-20px;">
+							<span class="SlpArw"></span>
+							<div class="Con" id="singlecontent<?=$rs['id']?>"><?=$rs['content']?></div>
+						</div>
+					</div>
+                </td>
+                <td id="singledatatype<?=$rs['id']?>"><?=config_item('datatype')[$rs['datatype']]?></td>
+                <td><?=config_item('appid')[$rs['appid']]?></td>
+                <td id="singlereporttype<?=$rs['id']?>"><?=config_item('type')[$rs['reporttype']]?></td>
+                <td><?=$rs['user']?></td>
+                <td id="singlereportuser<?=$rs['id']?>"><?=$rs['reportuser']?></td>
+                <td><?=$rs['reportip']?></td>
+                <td><?=$rs['uptime']?></td>
+                <td><?=config_item('status')[$rs['status']]?></td>
+                <td>  <a href="javascript:void(0);" onClick="Edit(<?=$rs['id']?>)" class="BtnSGry">审核</a></td>
+                <input type="hidden" id="singlereporttypeval<?=$rs['id']?>" value="<?=$rs['reporttype']?>">
+                <input type="hidden" id="singlefilterword<?=$rs['id']?>" value="<?=$rs['filterword']?>">
+                <input type="hidden" id="singlefilteruser<?=$rs['id']?>" value="<?=$rs['filteruser']?>">
+                <input type="hidden" id="singlefilterstatus<?=$rs['id']?>" value="<?=$rs['status']?>">
+            </tr>
+            <?php endforeach?>
+		<?php else :?>
+			<tr><td colspan="9">暂无数据</td></tr>
+		<?php endif?>
+    	</tbody>
+    </table>
+    <div class="Page">
+		<i class="Fl">共有 <?=isset($data['total']) ? $data['total'] : 0?> 条数据，当前第 <?=$page?> 页</i>
+		<?=isset($pagelink) ? $pagelink : ''?>
+    </div>
+<input type="hidden" id="typelxflag" value="">
+   
+    <!--Edit-->
+    <div id="TMEdit1Tmk" class="DiaWin W360">
+        <div class="DWTil Tc"><a class="BtnCls Fr " href="javascript:void(0);" onClick="Dialog.Close()"></a><font id="DiaTit">审核</font></div>
+        <div class="DWCon">
+            <form  class="Myform">
+                 <p class="Mt10 Cf">
+                    <span class="W50 Fl" style="width:70px;">举报内容</span>
+                    <a href="#" id="editcontent">银行房贷资金收紧 预计房贷增速大幅放缓</a>
+                </p>
+                <p class="Mt10 Cf">
+                    <span class="W50 Fl" style="width:70px;">举报类型</span>
+                     <a href="javascript:;" id="editreporttype">欺诈</a>
+                </p>
+                 <p class="Mt10 Cf">
+                    <span class="W50 Fl" style="width:70px;">过滤词：</span>
+                    <textarea class="W200" id="editfilterword"></textarea>
+                </p>
+                <p class="Mt10 Cf">
+                    <label>过滤词类型：
+                        <select class="SeoSltT1" id="editreporttypeval">
+                            <option value="99">全部</option>
+                            <?php if(is_array(config_item('type'))):?>
+                                <?php foreach(config_item('type') as $id => $name):?>
+                                    <option value="<?=$id?>"><?=$name?></option>
+                                <?php endforeach?>
+                            <?php endif?>
+                        </select>
+                    </label>
+                </p>
+                <p class="Mt10 Cf">
+                    <span class="W50 Fl" style="width:70px;">被举报人</span>
+                    <a href="javascript:;" id="editreportuser">user</a>
+                </p>
+                <p class="Mt10 Cf"> 
+                    <form>  
+                    被举报人是否屏蔽：
+                    <label style="display:inline-block;"><input name="statea" type="radio" value="1" />是 </label> 
+                    <label style="display:inline-block;"><input name="statea" type="radio" value="0" />否 </label> 
+                   </form>
+                </p>
+                <p class="Mt10 Cf">  
+                     <form> 
+                    审核：
+                    <label style="display:inline-block;"><input name="statusa" type="radio" value="1" />举报通过 </label> 
+                    <label style="display:inline-block;"><input name="statusa" type="radio" value="0" />举报不通过</label> 
+                     </form>
+                </p>
+                
+                <p class="Mt10 Tc">
+                    <a href="javascript:;" class="BtnSbm" onClick="editsubmit()">确定</a>
+                    <a href="javascript:;" class="BtnCncl Ml10" onClick="Dialog.Close()">取消</a>
+                </p>
+                <input type="hidden" id="editid" value="">
+            </form>
+        </div>
+    </div>
+
+
+    
+<script src="http://hs.cnfol.com/f=Cm/Js/Base.js,Cm/Js/Jquery18.js,ua/js/Clouds/Tables.js,Cm/Js/Checkbox.js,Cm/Js/Dialog6.js,Cm/Js/Forms.js,ui/Js/Kik/Compare.js,ui/Js/Select/Select.js,ua/js/Clouds/Calendar.js,Cm/Js/ShowInfo.js?v=201702281022" type="text/javascript"></script>
+<script type="text/javascript" src="http://hs.cnfol.com/f=ue/Js/Cloud/WdatePicker.js"></script>
+<script type="text/javascript" src="http://hs.cnfol.com/f=uf/js/jquery-1.12.0.min.js"></script>
+<script type="text/javascript">
+Tables("TabM","Ccl","Ocl");
+Checkbox("Fa1");
+</script>
+<script type="text/javascript">
+var flag = 1;
+var apiurl = "<?=base_url()?>reportcontent/ajaxAction.html"  
+//审核
+function Edit(Id){
+    var content='',reporttype='',reortuser='',reporttypeval='',filterword='',filteruser='',status='0',pbing='1',ftuser='1';
+    content = $('#singlecontent'+Id).html();
+    reporttype = $('#singlereporttype'+Id).html();
+    reortuser = $('#singlereportuser'+Id).html();
+    reporttypeval = $('#singlereporttypeval'+Id).val();
+    filterword = $('#singlefilterword'+Id).val();
+    filteruser = $('#singlefilteruser'+Id).val();
+    status = $('#singlefilterstatus'+Id).val();
+    if(status=='1')
+        pbing = '0';
+    if(filteruser=='1')
+        ftuser = '0';
+    $("input:radio[name='statea']").eq(ftuser).attr("checked",'checked');
+    $("input:radio[name='statusa']").eq(pbing).attr("checked",'checked');
+    $('#editcontent').html(content);
+    $('#editreporttype').html(reporttype);
+    $('#editreportuser').html(reortuser);
+    $('#editreporttypeval').val(reporttypeval);
+    $('#editfilterword').val(filterword);
+    $('#editid').val(Id);
+	Dialog('TMEdit1Tmk');
+	$('#DiaTit').html('审核');
+	
+}
+function editsubmit(){
+    data = getdata();
+    ajaxedit(data);
+}
+function getdata(){
+    user = $('#editreportuser').html();
+    typeval = $('#editreporttypeval').val();
+    filterword = $('#editfilterword').val();
+    id = $('#editid').val();
+
+    var state = getValue('statea'),
+    status = getValue('statusa');
+        
+    data = {
+            id:id,
+            typeval:typeval,
+            state:state,
+            status:status,
+            filterword:filterword
+        };
+    return data;        
+}
+function ajaxedit(data){
+    if(flag!='1' || !apiurl || !data)
+    {
+        return false;
+    }
+    else
+    {
+        flag = false;
+        $.ajax({
+            url : apiurl,
+            cache : false,
+            type : 'get',
+            dataType : 'json',
+            data : data,
+            success : function(data)
+            {
+                switch(data.flag)
+                {
+                    case '00':
+                        alert('修改成功!');
+                        Dialog.Close();
+                        location.reload();
+                    break;
+                    default:
+                        alert('修改失败!');
+                    break;
+                }
+                flag = '1';
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown)
+            {
+                alert('修改过程出现异常,错误码:'+textStatus);
+                flag = '1';
+            }
+        });
+    }
+}
+function getCheckBox()
+{
+    var chk_value = [];
+
+    $('input[name="fodderId"]:checked').each(function()
+    { 
+        chk_value.push($(this).val()); 
+    });
+
+    return chk_value;
+}
+function getValue(name){  
+    var radio = document.getElementsByName(name);  
+    for (i=0; i<radio.length; i++) { 
+        if (radio[i].checked) { 
+            return $(radio).eq(i).val();
+        }  
+    }  
+} 
+
+</script>
+
+ 
+    
+</body>
+</html>
+
+

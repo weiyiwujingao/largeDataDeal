@@ -1,0 +1,354 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /><!--用于修正ie8-->
+<title></title>
+<link type="text/css" rel="stylesheet" href="http://hs.cnfol.com/f=ub/Css/Modules/Basis.css,ui/Css/CloudCom/CloudCom.css,uh/Css/ISport/ISport.css,ua/css/cloud/Calendar.css,ui/Css/Select/Select.css,ud/Css/Ad/Css.css,ua/css/AdSystem/AdStyle.css" />
+</head>
+<body>
+<script type="text/javascript">try{document.domain="cnfol.com";}catch(e){}</script>
+    <div class="NavSy" id="flagdh">
+    	<div class="Navlst">
+        	<a href="<?=base_url()?>monitor/index.html?enddate=<?php echo date('Y-m-d');?>&startdate=<?php echo date('Y-m-d');?>" class="">监测统计</a>
+            <a href="<?=base_url()?>badword.html" class="">过滤库</a>
+            <a href="<?=base_url()?>shieldcontent.html" class="Cur">屏蔽管理</a>
+        </div>
+        <div class="MnLst">
+            <a href="<?=base_url()?>shieldcontent.html" class="">屏蔽内容管理</a>
+            <a href="<?=base_url()?>shieldimage.html" class="">屏蔽图片管理</a>
+            <a href="javascript:alert('暂无');" class="">举报内容</a>
+            <a href="<?=base_url()?>ipblacklist.html" class="Cur">ip黑名单</a>
+            <a href="<?=base_url()?>userblacklist.html" class="">用户黑名单</a>
+        </div>
+    </div>
+    <form class="FmSrch ComWrp" name="searchForm" action="" method="post">
+    	<label>举报内容：
+        	<input name="" value="" type="text">
+        </label>
+    	<label>内容形式：
+            <select class="SeoSltT1">
+            	<option value="0">全部</option>
+            	<option value="1">文章</option>
+            	<option value="2">评论</option>
+            </select>
+        </label>
+    	<label>来源项目：
+            <select class="SeoSltT1">
+            	<option value="0">全部</option>
+            	<option value="1">财视</option>
+            	<option value="2">手机网</option>
+            </select>
+        </label>
+        
+            <label>举报类型：
+            <select class="SeoSltT1">
+                <option value="0">全部</option>
+                <option value="1">欺诈</option>
+                <option value="2">色情</option>
+                <option value="3">骚扰</option>
+                <option value="4">侵权</option>
+                <option value="5">违反犯罪</option>
+                <option value="6">其他</option>
+            </select>
+        </label>
+        <label>举报人：
+            <input name="" value="" type="text">
+        </label>
+        <label>被举报人：
+            <input name="" value="" type="text">
+        </label>
+        <label>被举报人ip：
+            <input name="" value="" type="text">
+        </label>
+        <label for=" ">举报时间：
+            <input class="InpDate W100" onclick="showCalendar(this)" value="" id="DateStart" name="DateStart" type="text"> -
+            <input class="InpDate W100" onclick="showCalendar(this)" value="" id="DateEnd" name="DateEnd" type="text">
+        </label>
+        <label>状态：
+            <select class="SeoSltT1">
+                <option value="0">审核</option>
+                <option value="1">疑问</option>
+                <option value="2">正常</option>
+            </select>
+        </label>
+        <a href="javascript:;" onclick="javascript:document.searchForm.submit();" class="BtnSrch">查询</a>
+    </form>
+    
+	<!--<a href="javascript:;" class="BtnAdd" onClick="Add()">添加</a>-->
+    <div class="RsltTil">
+
+        查询结果：
+    </div>
+    <table  cellspacing="0" cellpadding="0" border="0" class="ComTabl TbPre" id="Fa1">      
+		<thead>
+            <tr>
+                <th width="5%"><label class="Ca" for="Ca"><input type="checkbox" id="Ca" class="Chk" /></label></th>
+                <th width="20%">举报内容</th>
+                <th width="5%">内容形式</th>
+                <th width="5%">来源项目</th>
+                <th width="10%">举报类型</th>
+                <th width="5%">举报人</th>
+                <th width="5%">被举报人</th>
+                <th width="10%">被举报人IP</th>
+                <th width="15%">举报时间</th>
+                <th width="10%">状态</th>
+                <th width="10%">操作</th>
+            </tr>
+        </thead>
+        <tbody id="TabM">
+        	<tr >
+                <td><input type="checkbox" class="Chk" value="1" name="fodderId"/></td>
+                <td>银行房贷资金收紧 预计房贷增速大幅放缓</td>
+                <td>文章</td>
+                <td>财视</td>
+                <td>欺诈</td>
+                <td>tssssss</td>
+                <td>tssssss</td>
+                <td>tssssss</td>
+                <td>2017-02-27 17:43:25</td>
+                <td>审核</td>
+                <td>  <a href="javascript:void(0);" onClick="Edit(1)" class="BtnSGry">审核</a></td>
+            </tr>
+            <tr  class="Even">
+                <td><input type="checkbox" class="Chk" value="2" name="fodderId"/></td>
+                 <td>银行房贷资金收紧 预计房贷增速大幅放缓</td>
+                <td>文章</td>
+                <td>财视</td>
+                <td>欺诈</td>
+                <td>tssssss</td>
+                <td>tssssss</td>
+                <td>tssssss</td>
+                <td>2017-02-27 17:43:25</td>
+                <td>审核</td>
+                <td>  <a href="javascript:void(0);" onClick="Edit(1)" class="BtnSGry">审核</a></td>
+            </tr>
+            <tr >
+                <td><input type="checkbox" class="Chk" value="3" name="fodderId"/></td>
+                <td>银行房贷资金收紧 预计房贷增速大幅放缓</td>
+                <td>文章</td>
+                <td>财视</td>
+                <td>欺诈</td>
+                <td>tssssss</td>
+                <td>tssssss</td>
+                <td>tssssss</td>
+                <td>2017-02-27 17:43:25</td>
+                <td>审核</td>
+                <td>  <a href="javascript:void(0);" onClick="Edit(1)" class="BtnSGry">审核</a></td>
+            </tr>
+            <tr  class="Even">
+                <td><input type="checkbox" class="Chk" value="4" name="fodderId"/></td>
+                 <td>银行房贷资金收紧 预计房贷增速大幅放缓</td>
+                <td>文章</td>
+                <td>财视</td>
+                <td>欺诈</td>
+                <td>tssssss</td>
+                <td>tssssss</td>
+                <td>tssssss</td>
+                <td>2017-02-27 17:43:25</td>
+                <td>审核</td>
+                <td>  <a href="javascript:void(0);" onClick="Edit(1)" class="BtnSGry">审核</a></td>
+            </tr>
+             <tr >
+                <td><input type="checkbox" class="Chk" value="3" name="fodderId"/></td>
+                <td>银行房贷资金收紧 预计房贷增速大幅放缓</td>
+                <td>文章</td>
+                <td>财视</td>
+                <td>欺诈</td>
+                <td>tssssss</td>
+                <td>tssssss</td>
+                <td>tssssss</td>
+                <td>2017-02-27 17:43:25</td>
+                <td>审核</td>
+                <td>  <a href="javascript:void(0);" onClick="Edit(1)" class="BtnSGry">审核</a></td>
+            </tr>
+    	</tbody>
+    </table>
+    <div class="Page">
+            <i class="Fl">共有 576 条数据，当前第 1 页</i>
+            <i class="pageR R">
+                    <a class="NoNm" href="####" onclick="pageControl('first')">首页</a>
+                    <a class="NoNm" href="####" onclick="pageControl('previous')">上一页</a>
+                    <a href="####" class="curent" onclick="pageControl('1')" style="cursor: pointer;">1</a>
+                    <a href="####" onclick="pageControl('2')" style="cursor: pointer;">2</a>
+                    <a href="####" onclick="pageControl('3')" style="cursor: pointer;">3</a>
+                    <a href="####" onclick="pageControl('4')" style="cursor: pointer;">4</a>
+                    <a href="####">...</a>
+                    <a class="NoNm" href="####" onclick="pageControl('next')">下一页</a>
+                    <a class="NoNm" href="####" onclick="pageControl('last')">尾页</a>
+                    <span>每页显示 <select name="pageBean.pageSize" onchange="changePageSize()" id="selectedpagesize">
+                            <option value="10" >10</option>
+                            <option value="20" selected>20</option>
+                            <option value="30" >30</option>
+                            <option value="40" >40</option>
+                            <option value="50" >50</option>
+                            <option value="60" >60</option>
+                            <option value="70" >70</option>
+                            <option value="80" >80</option>
+                            <option value="90" >90</option>
+                            <option value="100" >100</option>
+                        </select>
+                    </span>
+                </i>
+            </div>
+        <script type="text/javascript">
+        <!--
+             function pageControl(param) {
+                var page = "1";
+                if (param == "first") {
+                    page = "1";
+                } else if (param == "last") {
+                    page = "28";
+                } else if (param == "previous") {
+                    if(parseInt(page)>1){
+                        page = (parseInt(page) - 1);
+                    }
+                } else if (param == "next") {
+                    if(parseInt(page)<parseInt("28")){
+                        page = (parseInt(page) + 1);
+                    }
+                } else {
+                    page = param;
+                }
+                document.getElementById("pagenumbers").value=page;
+                document.getElementById("searchform").submit();
+            }
+            function changePageSize(){
+                document.getElementById("pagenumbers").value=1;
+                document.getElementById("pagesize").value=document.getElementById("selectedpagesize").value;
+                document.getElementById("searchform").submit();
+            }
+        //-->
+</script>
+<input type="hidden" id="typelxflag" value="">
+   
+    <!--Edit-->
+    <div id="TMEdit1Tmk" class="DiaWin W360">
+        <div class="DWTil Tc"><a class="BtnCls Fr " href="javascript:void(0);" onClick="Dialog.Close()"></a><font id="DiaTit">审核</font></div>
+        <div class="DWCon">
+            <form  class="Myform" method="post" action="" id="">
+                 <p class="Mt10 Cf">
+                    <span class="W50 Fl" style="width:70px;">举报内容</span>
+                    <a href="#">银行房贷资金收紧 预计房贷增速大幅放缓</a>
+                </p>
+                <p class="Mt10 Cf">
+                    <span class="W50 Fl" style="width:70px;">举报类型</span>
+                     欺诈
+                </p>
+                 <p class="Mt10 Cf">
+                    <span class="W50 Fl" style="width:70px;">过滤词：</span>
+                    <textarea class="W200"></textarea>
+                </p>
+                <p class="Mt10 Cf">
+                    <label>过滤词类型：
+                        <select class="SeoSltT1">
+                            <option value="0">全部</option>
+                            <option value="1">色情</option>
+                            <option value="2">辱骂</option>
+                            <option value="3">广告</option>
+                            <option value="4">政治</option>
+                            <option value="5">其他</option>
+                        </select>
+                    </label>
+                </p>
+                <p class="Mt10 Cf">
+                    <span class="W50 Fl" style="width:70px;">被举报人IP</span>
+                    112.113.114
+                </p>
+                <p class="Mt10 Cf"> 
+                    <form  method="" action="">  
+                    IP是否屏蔽：
+                    <label style="display:inline-block;"><input name="state" type="radio" value="" />是 </label> 
+                    <label style="display:inline-block;"><input name="state" type="radio" value="" />否 </label> 
+                   </form>
+                </p>
+                <p class="Mt10 Cf">  
+                     <form  method="" action=""> 
+                    审核：
+                    <label style="display:inline-block;"><input name="state" type="radio" value="" />通过 </label> 
+                    <label style="display:inline-block;"><input name="state" type="radio" value="" />不通过</label> 
+                     </form>
+                </p>
+                <p class="Mt10 Tc">
+                    <a href="javascript:;" class="BtnSbm" onClick="Dialog.Close()">确定</a>
+                    <a href="javascript:;" class="BtnCncl Ml10" onClick="Dialog.Close()">取消</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+
+    
+<script src="http://hs.cnfol.com/f=Cm/Js/Base.js,Cm/Js/Jquery18.js,ua/js/Clouds/Tables.js,Cm/Js/Checkbox.js,Cm/Js/Dialog6.js,Cm/Js/Forms.js,ui/Js/Kik/Compare.js,ui/Js/Select/Select.js,ua/js/Clouds/Calendar.js,Cm/Js/ShowInfo.js?v=201702281022" type="text/javascript"></script>
+<script type="text/javascript" src="http://hs.cnfol.com/f=ue/Js/Cloud/WdatePicker.js"></script>
+
+<script type="text/javascript">
+
+Tables("TabM","Ccl","Ocl");
+Checkbox("Fa1");
+// Forms("FmSrc");
+// ShowInfo(C.Gsn("Ms1"));
+
+// Selects('SlcTxt');
+
+// Adb.Select();
+
+//展开收缩
+//var subty = $("#subType7").val();
+//Adert.ShowHide('TMAdd7Tmk','Advert','AdvertBox',{n:subty});
+
+</script>
+<script type="text/javascript">
+//审核
+function Edit(Id){
+	Dialog('TMEdit1Tmk');
+	$('#DiaTit').html('审核');
+	
+}
+//删除
+function Dels(id){
+	if(id == 0){
+  		var checkbox = document.getElementsByName("fodderId");
+		var ids = "";
+		var count = 0;
+		for(var i=0;i<checkbox.length;i++){
+			if(checkbox[i].checked){
+				ids+=checkbox[i].value+",";
+				count++;
+			}
+		}
+	}else{
+		var count = 1;
+		var ids = id+",";
+	}
+	if(count==0){
+		alert("请至少选择一条问题");
+		return false;
+	}else if(count == 1){
+		var xg = confirm("是否确定删除？");
+	}else{
+		var xg = confirm("是否确定全部删除？");
+	}
+	if(xg == true){
+		ids = ids.substring(0,ids.length-1);
+		$.ajax({
+			url:"delAdFodder.html?ids="+ids,
+			type:'post',
+			success:function (date){
+				alert("删除成功！！！！！！！");
+				document.getElementById("searchform").submit();
+			}
+		});
+	}else{
+		return xg;
+	}
+}
+
+</script>
+
+ 
+    
+</body>
+</html>
+
+

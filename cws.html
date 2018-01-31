@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+  <title> 分词v1.0 </title>
+	<meta charset="utf-8">
+ </head>
+
+ <body style="font-size:12px;">
+ <div style="text-align:left">
+  <textarea id="content" name="content" rows="15" cols="80"></textarea><br><br>
+  分词条数:&nbsp;<input type="text" name="limit" size="1" value="10">
+  &nbsp;&nbsp;
+  词性分类:
+  <input type="checkbox" name="type" value="nr" checked>人名
+  <input type="checkbox" name="type" value="ns" checked>地名
+  <input type="checkbox" name="type" value="n" checked>名词
+  <input type="checkbox" name="type" value="a">形容词
+  <input type="checkbox" name="type" value="d">副词
+  <input type="checkbox" name="type" value="e">叹词
+  <input type="checkbox" name="type" value="f">方位词
+  <input type="checkbox" name="type" value="c">连词
+  <input type="checkbox" name="type" value="p">介词
+  <input type="checkbox" name="type" value="v">动词
+  <br><br>
+  <div id="result" style="float:left"></div>
+  <br><br>
+  <input type="button" value="检查内容" id="start" style="width:600px;">
+ </div>
+ 
+  <script type="text/javascript" src="http://hs.cnfol.com/f=uf/js/jquery-1.12.0.min.js"></script>
+  <script type="text/javascript">
+
+	var content = $.trim($('#content').val());
+
+	$("#start").click(function()
+	{  
+		var chk_value = new Array(),
+			content = $.trim($('#content').val());;
+
+		$('input[name="type"]:checked').each(function(){    
+			chk_value.push($(this).val());    
+		}); 
+
+		if(chk_value.length == 0)
+		{
+			alert('请选择词性');
+			return false;
+		}
+		if(content.length == 0)
+		{
+			alert('请填写分词内容');
+			return false;
+		}
+		else
+		{
+			$.ajax({
+				url: 'http://databank.test.api.cnfol.com/v1/cws.html',
+				cache: false,
+				type: 'get',
+				dataType: 'jsonp',
+				jsonp: 'callback',
+				data: {text:encodeURI(content),type:'~'+chk_value.join(',')},
+				success: function(json)
+				{
+					var msg = '';
+					switch(json['Code'])
+					{
+						case 200:
+							$.each(json['List'],function(index,value){
+								msg += value['word']+',';
+							});
+						break;
+						default:
+							msg = '内容失败';
+						break;
+					}
+
+					$('#result').html('结果:'+msg+'&nbsp;&nbsp;'+'<br>总耗时:'+json['runtime']);
+
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown)
+				{
+					alert('请求异常'+textStatus);
+				}
+			});
+		}
+	})
+  </script>
+ </body>
+</html>

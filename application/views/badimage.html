@@ -1,0 +1,405 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /><!--用于修正ie8-->
+<title></title>
+<link type="text/css" rel="stylesheet" href="http://hs.cnfol.com/f=ub/Css/Modules/Basis.css,ui/Css/CloudCom/CloudCom.css,uh/Css/ISport/ISport.css,ua/css/cloud/Calendar.css,ui/Css/Select/Select.css,ud/Css/Ad/Css.css,ua/css/AdSystem/AdStyle.css,Quote/Js/Up/uploadify.css" /></head>
+<style type="text/css">
+    #TabM img{width:50px;height:50px;display: block;border: 1px solid #ccc;margin: 5px auto;}
+</style>
+<body>
+<script type="text/javascript">try{document.domain="cnfol.com";}catch(e){}</script>
+    <div class="NavSy" id="flagdh">
+    	<div class="Navlst">
+        	<a href="<?=base_url()?>monitor/index.html?enddate=<?php echo date('Y-m-d');?>&startdate=<?php echo date('Y-m-d');?>" class="">监测统计</a>
+            <a href="<?=base_url()?>badword.html" class="Cur">过滤库</a>
+            <a href="<?=base_url()?>shieldcontent.html" class="">屏蔽管理</a>
+        </div>
+        <div class="MnLst">
+            <a href="<?=base_url()?>badword.html" class="">过滤词库</a>
+            <a href="<?=base_url()?>badimage.html" class="Cur">过滤图库</a>
+        </div>
+    </div>
+    <form class="FmSrch ComWrp" id="FmSrc" name="FmSrc" action="<?=base_url()?>badimage.html" method="get">
+    	<label>类型：
+            <select class="SeoSltT1" name="type">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('type'))):?>
+					<?php foreach(config_item('type') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($type) && $type == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+    	<label>来源：
+            <select class="SeoSltT1" name="appid">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('appid'))):?>
+					<?php foreach(config_item('appid') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($appid) && $appid == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+    	<label>状态：
+            <select class="SeoSltT1" name="state">
+            	<option value="99">全部</option>
+				<?php if(is_array(config_item('state'))):?>
+					<?php foreach(config_item('state') as $id => $name):?>
+						<option value="<?=$id?>" <?=(isset($state) && $state == $id) ? 'selected' : ''?>><?=$name?></option>
+					<?php endforeach?>
+				<?php endif?>
+            </select>
+        </label>
+        <label>添加时间：
+            <input class="InpDate W100" onclick="showCalendar(this)" value="<?=isset($startdate) ? $startdate : ''?>" name="startdate" type="text"> -
+            <input class="InpDate W100" onclick="showCalendar(this)" value="<?=isset($enddate) ? $enddate : ''?>" name="enddate" type="text">
+        </label>
+        <a href="javascript:FmSrc.submit();" class="BtnSrch">查询</a>
+    </form>
+    <a href="javascript:void(0);" class="BtnDel Mt10" id="BtnAdd">添加</a>
+    <div class="RsltTil">
+        查询结果：
+    </div>
+    <table cellspacing="0" cellpadding="0" border="0" class="ComTabl TbPre">      
+		<thead>
+            <tr>
+                <th width="15%">过滤图</th>
+				<th width="15%">类型</th>
+                <th width="15%">来源</th>
+                <th width="15%">状态</th>
+                <th width="10%">创建人</th>
+                <th width="20%">添加时间</th>
+                <th width="20%">操作</th>
+            </tr>
+        </thead>
+        <tbody id="TabM">
+		<?php if(isset($data['list']) && !empty($data['list'])):?>
+			<?php foreach($data['list'] as $rs):?>
+				<tr>
+					<td><img src="<?=$rs['imageurl']?>" width="50" height="50"></td>
+					<td><?=config_item('type')[$rs['type']]?></td>
+					<td><?=config_item('appid')[$rs['appid']]?></td>
+					<td><?=config_item('state')[$rs['state']]?></td>
+					<td><?=$rs['createuser']?></td>
+					<td><?=$rs['uptime']?></td>
+					<td>
+						<a href="javascript:void(0);" onClick="editBadimage(<?=$rs['id']?>,'<?=$rs['imageurl']?>',<?=$rs['type']?>,<?=$rs['state']?>)" class="BtnSGry">修改</a>
+						<a href="javascript:void(0);" onClick="delBadimage(<?=$rs['id']?>)" class="BtnSGry">删除</a>
+					</td>
+				</tr>
+			<?php endforeach?>
+		<?php else :?>
+			<tr><td colspan="7">暂无数据</td></tr>
+		<?php endif?>
+    	</tbody>
+    </table>
+    <div class="Page">
+		<i class="Fl">共有 <?=isset($data['total']) ? $data['total'] : 0?> 条数据，当前第 <?=$page?> 页</i>
+		<?=isset($pagelink) ? $pagelink : ''?>
+    </div>
+    <!--Add-->
+    <div id="TMAddTmk" class="DiaWin W360">
+        <div class="DWTil Tc"><a class="BtnCls Fr " href="javascript:void(0);" onClick="Dialog.Close()"></a><font id="DiaTit">添加</font></div>
+        <div class="DWCon">
+        	<form class="Myform" id="addFrm">
+                <p class="Mt10 Cf">
+                	<span class="W50 Fl">过滤图：</span>
+                    <input id="imgupload1" name="imgupload1" type="file" multiple="true">
+					<img id="browseimg1" width="50" height="50" style="display:none;">
+                </p>
+				<p class="Mt10 Cf">
+					<span class="W50 Fl" style="width:70px;">类型：</span>
+					<select class="SeoSltT1" id="add_type">
+						<?php if(is_array(config_item('type'))):?>
+							<?php foreach(config_item('type') as $id => $name):?>
+								<option value="<?=$id?>"><?=$name?></option>
+							<?php endforeach?>
+						<?php endif?>
+					</select>
+				</p>
+				<p class="Mt10 Cf">
+					<span class="W50 Fl" style="width:70px;">状态：</span>
+					<select class="SeoSltT1" id="add_state">
+						<?php if(is_array(config_item('state'))):?>
+							<?php foreach(config_item('state') as $id => $name):?>
+								<option value="<?=$id?>"><?=$name?></option>
+							<?php endforeach?>
+						<?php endif?>
+					</select>
+				</p>
+                <p class="Mt10 Tc">
+                	<a href="javascript:;" class="BtnSbm" id="addSub">提交</a>
+                    <a href="javascript:;" class="BtnCncl Ml10" onClick="Dialog.Close()">取消</a>
+                </p>
+            </form>
+        </div>
+    </div>
+ <!--Edit-->
+    <div id="TMEditTmk" class="DiaWin W360">
+        <div class="DWTil Tc"><a class="BtnCls Fr" href="javascript:void(0);" onClick="Dialog.Close()"></a><font id="DiaTit">修改</font></div>
+        <div class="DWCon">
+            <form class="Myform" id="editFrm">
+                <p class="Mt10 Cf">
+                	<span class="W50 Fl">过滤图：</span>
+                    <input id="imgupload2" name="imgupload2" type="file" multiple="true">
+					<img id="browseimg2" width="50" height="50">
+                </p>
+				<p class="Mt10 Cf">
+					<span class="W50 Fl" style="width:70px;">类型：</span>
+					<select class="SeoSltT1" id="edit_type">
+						<?php if(is_array(config_item('type'))):?>
+							<?php foreach(config_item('type') as $id => $name):?>
+								<option value="<?=$id?>"><?=$name?></option>
+							<?php endforeach?>
+						<?php endif?>
+					</select>
+				</p>
+				<p class="Mt10 Cf">
+					<span class="W50 Fl" style="width:70px;">状态：</span>
+					<select class="SeoSltT1" id="edit_state">
+						<?php if(is_array(config_item('state'))):?>
+							<?php foreach(config_item('state') as $id => $name):?>
+								<option value="<?=$id?>"><?=$name?></option>
+							<?php endforeach?>
+						<?php endif?>
+					</select>
+				</p>
+                <p class="Mt10 Tc">
+                    <a href="javascript:;" class="BtnSbm" id="editSub">提交</a>
+                    <a href="javascript:;" class="BtnCncl Ml10" onClick="Dialog.Close()">取消</a>
+                </p>
+            </form>
+        </div>
+    </div>
+	<!--确定删除-->
+	<div id="TMDelTmk" class="DiaWin DWS">
+		<div class="DWTil Tc"><a class="BtnCls Fr" href="javascript:void(0);" onClick="Dialog.Close();"></a>删除</div>
+		<div class="DWCon Tc">
+			<p>是否确认删除？</p>
+			<a id="delSub" href="javascript:void(0);" class="BtnSbm" onClick="Dialog.Close();">确定</a>
+			<a href="javascript:void(0);" class="BtnCncl" onClick="Dialog.Close();">取消</a>
+		</div>
+	</div>
+	<!--确定删除end-->
+
+    
+<script src="http://hs.cnfol.com/f=Cm/Js/Base.js,Cm/Js/Jquery18.js,ua/js/Clouds/Tables.js,Cm/Js/Checkbox.js,Cm/Js/Dialog6.js,Cm/Js/Forms.js,ui/Js/Kik/Compare.js,ui/Js/Select/Select.js,ua/js/Clouds/Calendar.js?v=201702281022" type="text/javascript"></script>
+<script type="text/javascript" src="http://hs.cnfol.com/f=ue/Js/Cloud/WdatePicker.js"></script>
+<script type="text/javascript" src="http://hs.cnfol.com/f=Quote/Js/Up/jquery.uploadify.min.js?v=<?=time()?>"></script>
+<script type="text/javascript">
+	Tables("TabM","Ccl","Ocl");
+
+	var apiurl = "<?=base_url()?>badimage/action.html";
+
+	function uploadInit(opertype)
+	{
+		$('#imgupload'+opertype).uploadify({
+			'buttonText' : '点击上传',
+			'fileObjName' : 'imgupload'+opertype,
+			'swf' : '<?=base_url()?>uploadify.swf',
+			'uploader' : apiurl + '?oper=upload&opertype='+opertype,
+			'multi' : false,
+			'auto': true,
+			'method' : 'get',
+			'onUploadSuccess': function (file, data, response)
+			{
+				var json = $.parseJSON(data);
+				
+				switch(json['flag'])
+				{
+					case '00':
+						$('#browseimg'+opertype).attr('src', json['imageurl']);
+						$('#browseimg'+opertype).show();
+					break;
+					default:
+						alert(json['error']);
+					break;
+				}
+			}
+		});
+	}
+
+   /**
+     * 添加敏感图
+	 *
+	 * @return string
+     */
+	$('#BtnAdd').click(function()
+	{
+        Dialog('TMAddTmk');
+
+		$('#addFrm')[0].reset();
+
+		uploadInit(1);
+
+		$('#addSub').unbind('click').bind('click',function()
+		{
+			var imgurl = $('#browseimg1')[0].src,
+				type   = $('#add_type').val(),
+				state  = $('#add_state').val();
+
+			if(imgurl == '')
+			{
+				alert('请上传敏感图');
+				return false;
+			}
+			if(type == '')
+			{
+				alert('请选择敏感图类型');
+				return false;
+			}
+			if(state == '')
+			{
+				alert('请选择敏感图状态');
+				return false;
+			}
+			else
+			{
+				$.ajax({
+					url : apiurl,
+					cache : false,
+					type : 'get',
+					dataType : 'json',
+					data : {oper : 'add', imgurl : imgurl, type : type, state : state},
+					success: function(data)
+					{
+						switch(data.flag)
+						{
+							case '00':
+								alert('添加成功!');
+								Dialog.Close();
+								location.reload();
+							break;
+							default:
+								alert('添加失败!');
+							break;
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown)
+					{
+						alert('添加过程出现异常,错误码:'+textStatus);
+					}
+				});
+			}
+        });
+    });
+
+   /**
+     * 修改敏感图
+	 *
+	 * @param integer id     记录ID
+	 * @param string  imgurl 敏感图
+	 * @param integer type   敏感图类型
+	 * @param integer state  敏感图状态
+	 * @return string
+     */
+    function editBadimage(id,imgurl,type,state)
+	{
+        Dialog('TMEditTmk');
+
+		var edit_imgurl = $("#browseimg2"),
+			edit_type   = $("#edit_type"),
+			edit_state  = $("#edit_state");
+
+		edit_imgurl.attr('src', imgurl);
+		edit_type.val(type);
+		edit_state.val(state);
+		
+		uploadInit(2);
+
+		$('#editSub').unbind('click').bind('click',function()
+		{
+			if($('#browseimg2')[0].src == '')
+			{
+				alert('请上传敏感图');
+				return false;
+			}
+			if(edit_type.val() == '')
+			{
+				alert('请选择敏感图类型');
+				return false;
+			}
+			if(edit_state.val() == '')
+			{
+				alert('请选择敏感图状态');
+				return false;
+			}
+			else
+			{
+				$.ajax({
+					url : apiurl,
+					cache : false,
+					type : 'get',
+					dataType : 'json',
+					data : {oper : 'edit', id : id, imgurl : $('#browseimg2')[0].src, type : edit_type.val(), state : edit_state.val()},
+					success: function(data)
+					{
+						switch(data.flag)
+						{
+							case '00':
+								alert('修改成功!');
+								Dialog.Close();
+								location.reload();
+							break;
+							default:
+								alert('修改失败!');
+							break;
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown)
+					{
+						alert('修改过程出现异常,错误码:'+textStatus);
+					}
+				});
+			}
+		});
+    }
+
+   /**
+     * 删除敏感图
+	 *
+	 * @param integer id 记录ID
+	 * @return string
+     */
+    function delBadimage(id)
+	{
+        Dialog('TMDelTmk');
+
+		$('#delSub').unbind('click').bind('click',function()
+		{
+            Dialog.Close();
+			
+			if(id > 0)
+			{
+				$.ajax({
+					url: apiurl,
+					cache: false,
+					type: 'get',
+					dataType: 'json',
+					data: {oper: 'del', id: id},
+					success: function(data)
+					{
+						switch(data.flag)
+						{
+							case '00':
+								alert('删除成功!');
+								location.reload();
+							break;
+							default:
+								alert('删除失败!');
+							break;
+						}
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown)
+					{
+						alert('删除过程出现异常,错误码:'+textStatus);
+					}
+				});
+			}
+        });
+    };
+</script>
+</body>
+</html>
