@@ -1,5 +1,5 @@
 <?php
-
+//定义长量
 define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
 
 switch (ENVIRONMENT)
